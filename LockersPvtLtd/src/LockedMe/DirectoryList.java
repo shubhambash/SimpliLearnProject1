@@ -1,4 +1,6 @@
 package LockedMe;
+import java.io.File;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -8,9 +10,10 @@ public class DirectoryList implements CRUDInterface{
 	
 	
 	// using a TreeMap with custom class FileStorage which implements Comparator interface
-	TreeMap<FileStorage, Integer> fl;
-	
-	// styles class instance
+	TreeMap<FileStorage, String> fl;
+	// using hash map to reduce remove operation time complexity
+	HashMap<String, FileStorage> hashmap; 
+ 	// styles class instance
 	Styles style = new Styles();
 	// list of options class instance
 	OptionsList options = new OptionsList();
@@ -19,18 +22,18 @@ public class DirectoryList implements CRUDInterface{
 	//Input processor
 	OptionProcessor processInputs = new OptionProcessor(); 
 	
+	String path = "C:\\Users\\ASUS\\Desktop\\New Files";
+	
+	
 	// Constructor
 	DirectoryList()
 	{
 		// assigning reference to the tree map instance
-		fl = new TreeMap<FileStorage, Integer>(new DirectoryStoreComp());
-		FileStorage f1 = new FileStorage(1,"zile1.txt", "text file", "This is my first text file");
-		FileStorage f2 = new FileStorage(2,"yile1.txt", "text file", "This is my first text file");
-		FileStorage f3 = new FileStorage(3, "file1.txt", "text file", "This is my first text file");
+		fl = new TreeMap<FileStorage, String>(new DirectoryStoreComp());
+		hashmap = new HashMap<>();
+	
 		
-		fl.put(f1,  1);
-		fl.put(f2, 2);
-		fl.put(f3, 3);
+		
 		
 		showDirectoryItems();			
 		int userChoice = 0;
@@ -41,6 +44,9 @@ public class DirectoryList implements CRUDInterface{
 			options.showOptions(2);		
 			userChoice = processOptions();
 		}
+		
+		MainMenu menu = new MainMenu();
+		
 	}
 	
 			
@@ -48,8 +54,33 @@ public class DirectoryList implements CRUDInterface{
 	@Override
 	public void showDirectoryItems()
 	{
-		// show folder name here // right now its hard coded 
+		
+		
+		File folder = new File(path);
+		File[] listOfFiles = folder.listFiles();
 		System.out.println("----> root");
+		for (int i = 0; i < listOfFiles.length; i++) {
+		  if (listOfFiles[i].isFile()) {
+		    
+//			  System.out.println("File " + listOfFiles[i].getName());
+		    
+			FileStorage fileObject = new FileStorage(Math.random(), listOfFiles[i].getName(), "text file" ,"content");
+			  
+			fl.put(fileObject, listOfFiles[i].getName());
+			hashmap.put(listOfFiles[i].getName(), fileObject);
+		  } else if (listOfFiles[i].isDirectory()) {
+		    System.out.println("Directory " + listOfFiles[i].getName());
+		  }
+		}
+		
+		
+		
+		
+		
+		
+		
+		// show folder name here // right now its hard coded 
+		
 		for(FileStorage item : fl.keySet())
 		{
 			style.printStyle("  |");System.out.println();
@@ -63,9 +94,21 @@ public class DirectoryList implements CRUDInterface{
 	{
 		try {
 			
-			FileStorage fileObject = new FileStorage(Math.random(), fileName, "text file" ,content);
-			int id = (int) Math.random();
-			fl.put(fileObject, id);
+			File myObj = new File(path + "\\" + fileName);
+			
+			 if (myObj.createNewFile()) {
+			     
+					FileStorage fileObject = new FileStorage(Math.random(), fileName, "text file" ,"content");
+					fl.put(fileObject, fileName);
+					hashmap.put(fileName, fileObject);
+				 	style.NSpaces(1);
+				 	System.out.println("File Created !");
+				 	style.NSpaces(1);
+				 
+			      } else {
+			        System.out.println("File already exists.");
+			      }
+			
 			
 		} catch (Exception e) {
 			System.out.println("An error occured ! ");
@@ -74,15 +117,56 @@ public class DirectoryList implements CRUDInterface{
 	}
 
 	@Override
-	public void removeFile() {
-		// TODO Auto-generated method stub
+	public void removeFile(String fileName) {
+		try {
+		
+			File fileObject = new File(path + "\\" + fileName);
+			
+			  if (fileObject.delete()) {
+				  
+				  	fl.remove(hashmap.get(fileName));
+				  	hashmap.remove(fileName);
+				  	
+		            System.out.println("File deleted successfully");
+		        
+			  }
+		      else {
+		    	  
+		            System.out.println("Failed to delete the file. File Not Found !");
+		        
+		      }
+			
+			
+		} catch (Exception e) {
+			System.out.println("File Not Found ! Please Enter Correct Name (Case Sensitive)");
+		}
 		
 	}
 
 
 	@Override
-	public void searchFile() {
-		// TODO Auto-generated method stub
+	public void searchFile(String fileName) {
+		
+		if(hashmap.containsKey(fileName))
+		{
+			System.out.println("File Found!");
+			style.NSpaces(2);
+			style.repeatLine(60);
+			
+			System.out.println(fileName);
+			style.NSpaces(2);
+			System.out.println(hashmap.get(fileName).fileContent);
+			style.repeatLine(60);
+			style.NSpaces(2);
+			
+		}
+		else
+		{
+			System.out.println("File Not Found! (Enter correct file name - case sensitive)");
+	
+			style.NSpaces(2);
+		}
+	
 		
 	}
 	
@@ -94,12 +178,13 @@ public class DirectoryList implements CRUDInterface{
 		
 		switch (userChoice) {
 		case 1: {
+			
 			// calling the file input processor function with - add attribute 
 			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("add");
 			// calling the add file function
 			addFile(fileNameAndContentInput.fileName, fileNameAndContentInput.fileContent);style.NSpaces(1);
 			
-			style.repeatLine(55);style.NSpaces(2);
+			style.repeatLine(60);style.NSpaces(2);
 			// displaying all directory items again
 			showDirectoryItems();
 			break;
@@ -110,15 +195,17 @@ public class DirectoryList implements CRUDInterface{
 			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("remove");
 			
 			// calling the remove file function
-			removeFile();style.NSpaces(1);
+			removeFile(fileNameAndContentInput.fileName);style.NSpaces(1);
 			
-			style.repeatLine(55);
+			style.repeatLine(60);
 			style.NSpaces(2);
 			showDirectoryItems();
 			break;
 		}
 		case 3:{
 			
+			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("remove");
+			searchFile(fileNameAndContentInput.fileName);
 			break;
 		}
 		case 4:{
@@ -127,7 +214,7 @@ public class DirectoryList implements CRUDInterface{
 		}
 		default:
 		{
-			
+			System.out.println("Some Error Occured !");
 			break;
 		}
 		

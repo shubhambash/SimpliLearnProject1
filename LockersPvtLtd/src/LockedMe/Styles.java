@@ -20,5 +20,16 @@ public class Styles {
 		while(length-- > 0)System.out.println();
 	}
 	
+	void verticalLine(int horizontalSpace, int length)
+	{
+		String s = "";
+		for(int i = 0; i < horizontalSpace; i++) s += " ";
+		
+		for(int i = 0; i < length; i++)
+		{
+			System.out.println(s + "|");
+		}
+	}
+	
 
 }
