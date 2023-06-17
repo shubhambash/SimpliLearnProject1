@@ -22,7 +22,7 @@ public class DirectoryList implements CRUDInterface{
 	//Input processor
 	OptionProcessor processInputs = new OptionProcessor(); 
 	
-	String path = "C:\\Users\\ASUS\\Desktop\\New Files";
+	private String path = "C:\\Users\\ASUS\\Desktop\\New Files";
 	
 	
 	// Constructor
@@ -31,10 +31,7 @@ public class DirectoryList implements CRUDInterface{
 		// assigning reference to the tree map instance
 		fl = new TreeMap<FileStorage, String>(new DirectoryStoreComp());
 		hashmap = new HashMap<>();
-	
-		
-		
-		
+
 		showDirectoryItems();			
 		int userChoice = 0;
 		
@@ -45,8 +42,7 @@ public class DirectoryList implements CRUDInterface{
 			userChoice = processOptions();
 		}
 		
-		MainMenu menu = new MainMenu();
-		
+		MainMenu menu = new MainMenu();		
 	}
 	
 			
@@ -57,12 +53,14 @@ public class DirectoryList implements CRUDInterface{
 		
 		
 		File folder = new File(path);
+		
+		// retrieve the files from the directory and store in an array
 		File[] listOfFiles = folder.listFiles();
 		System.out.println("----> root");
+		
+		
 		for (int i = 0; i < listOfFiles.length; i++) {
 		  if (listOfFiles[i].isFile()) {
-		    
-//			  System.out.println("File " + listOfFiles[i].getName());
 		    
 			FileStorage fileObject = new FileStorage(Math.random(), listOfFiles[i].getName(), "text file" ,"content");
 			  
@@ -73,13 +71,8 @@ public class DirectoryList implements CRUDInterface{
 		  }
 		}
 		
-		
-		
-		
-		
-		
-		
-		// show folder name here // right now its hard coded 
+
+		// shows the available files in ascending order of their names 
 		
 		for(FileStorage item : fl.keySet())
 		{
@@ -214,7 +207,7 @@ public class DirectoryList implements CRUDInterface{
 		}
 		default:
 		{
-			System.out.println("Some Error Occured !");
+			System.out.println("");
 			break;
 		}
 		
