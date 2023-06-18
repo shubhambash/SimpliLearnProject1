@@ -21,7 +21,7 @@ public class DirectoryList implements CRUDInterface{
 	Scanner sc = new Scanner(System.in);
 	//Input processor
 	OptionProcessor processInputs = new OptionProcessor(); 
-	
+	// Dummy Folder path used as a constant here. In real application a user will set the actual path or configure the database url
 	private String path = "C:\\Users\\ASUS\\Desktop\\New Files";
 	
 	
@@ -167,7 +167,15 @@ public class DirectoryList implements CRUDInterface{
 	int processOptions()
 	{
 		style.printStyle(">");
-		int userChoice = sc.nextInt();
+		int userChoice = 0;
+		try {
+			userChoice = sc.nextInt();
+		} catch (Exception e) {
+			userChoice = 0;
+			sc.nextLine();
+		}
+		
+		
 		
 		switch (userChoice) {
 		case 1: {
@@ -175,6 +183,13 @@ public class DirectoryList implements CRUDInterface{
 			// calling the file input processor function with - add attribute 
 			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("add");
 			// calling the add file function
+			
+			if(fileNameAndContentInput.fileName == null)
+			{
+				throwInvalidNameError();
+				break;
+			}
+			
 			addFile(fileNameAndContentInput.fileName, fileNameAndContentInput.fileContent);style.NSpaces(1);
 			
 			style.repeatLine(60);style.NSpaces(2);
@@ -186,7 +201,11 @@ public class DirectoryList implements CRUDInterface{
 			
 			// calling the file input processor function with - remove attribute 
 			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("remove");
-			
+			if(fileNameAndContentInput.fileName == null)
+			{
+				throwInvalidNameError();
+				break;
+			}
 			// calling the remove file function
 			removeFile(fileNameAndContentInput.fileName);style.NSpaces(1);
 			
@@ -198,6 +217,13 @@ public class DirectoryList implements CRUDInterface{
 		case 3:{
 			
 			FileStorage fileNameAndContentInput = processInputs.returnFileStorageObject("remove");
+			
+			if(fileNameAndContentInput.fileName == null)
+			{
+				throwInvalidNameError();
+				break;
+			}
+			
 			searchFile(fileNameAndContentInput.fileName);
 			break;
 		}
@@ -207,13 +233,23 @@ public class DirectoryList implements CRUDInterface{
 		}
 		default:
 		{
-			System.out.println("");
+			style.NSpaces(2);
+			System.out.println("Invalid Option Entered!");
+			style.NSpaces(1);
 			break;
 		}
 		
 		}
 		
 		return userChoice;
+	}
+	
+	
+	private void throwInvalidNameError()
+	{
+		style.NSpaces(2);
+		System.out.println("Please Enter a Valid File Name!");
+		style.NSpaces(1);
 	}
 
 	

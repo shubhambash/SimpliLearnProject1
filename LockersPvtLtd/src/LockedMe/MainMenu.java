@@ -36,29 +36,52 @@ public class MainMenu {
 		
 		Scanner sc = new Scanner(System.in);
 		style.printStyle(">");
-		int optionLevelOne = sc.nextInt();
 		
-		switch(optionLevelOne) {
-		case 1:{
-			// open directory list
-			style.NSpaces(2);
-			DirectoryList dl = new DirectoryList();
-			break;
-		}
-		case 2:
+		int optionLevelOne = 0;
+		boolean exitProg = false;
+		
+		while(!exitProg)
 		{
-			//exit program
-			style.repeatLine(55);
-			System.out.println("Thank you for using LockedMe.com - see you next time !");
-			style.repeatLine(55);
-			break;
-		}
-		default:{
-			op.showOptions(1);
-			break;
+			try {
+				
+				 optionLevelOne = sc.nextInt();
+				
+			} catch (Exception e) {
+				optionLevelOne = 0;
+				style.NSpaces(2);
+				sc.nextLine();
+			}
+			
+			
+			
+			switch(optionLevelOne) {
+			case 1:{
+				// open directory list
+				style.NSpaces(2);
+				DirectoryList dl = new DirectoryList();
+				break;
+			}
+			case 2:
+			{
+				//exit program
+				style.repeatLine(55);
+				System.out.println("Thank you for using LockedMe.com - see you next time !");
+				style.repeatLine(55);
+				exitProg = true;
+				break;
+			}
+			default:{
+				style.NSpaces(2);
+				System.out.println("Invalid Option Entered! Please Enter a Valid Option.");
+				style.NSpaces(1);
+				op.showOptions(1);
+				break;
+			}
+			
+			}
 		}
 		
-		}
+	
 		
 	}
 	
