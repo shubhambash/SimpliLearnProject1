@@ -86,11 +86,13 @@ public class DirectoryList implements CRUDInterface{
 	public void addFile(String fileName, String content)
 	{
 		try {
-			
+			// Add file is not case sensitive
+			fileName = fileName.toLowerCase();
 			File myObj = new File(path + "\\" + fileName);
 			
 			 if (myObj.createNewFile()) {
-			     
+			        
+			        System.out.println(fileName);
 					FileStorage fileObject = new FileStorage(Math.random(), fileName, "text file" ,"content");
 					fl.put(fileObject, fileName);
 					hashmap.put(fileName, fileObject);
